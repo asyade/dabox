@@ -2,8 +2,6 @@ use std::{collections::HashSet, hash::Hash};
 
 use crate::prelude::*;
 
-const DIRECTORY_MAX_DEPTH: u32 = 4096;
-
 /// Internal representation of a `DaDirectory` in the memory backend.
 /// Thread-safe.
 #[derive(Debug, Clone)]
@@ -24,17 +22,35 @@ struct MemDaDirectory {
 /// Useful for testing and development purposes.
 #[derive(Clone)]
 pub struct MemRepository {
-    /// Global counter for generating new directory serial identifiers
+    buckets: Arc<RwLock<HashMap<EntityUid, Bucket>>>,
+}
+
+#[derive(Clone)]
+struct Bucket {
     sid_counter: Arc<AtomicI64>,
-    /// In-memory storage of all directories
     directories: Arc<RwLock<HashMap<DaDirectorySid, MemDaDirectory>>>,
 }
 
 impl MemRepository {
     pub fn new() -> Self {
         Self {
-            sid_counter: Arc::new(AtomicI64::new(0)),
-            directories: Arc::new(RwLock::new(HashMap::new())),
+            buckets: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+
+    async fn bucket(&self, uid: EntityUid) -> Bucket {
+        let maybe_bucket = {
+            let lock = self.buckets.read().await;
+            lock.get(&uid).cloned()
+        };
+        match maybe_bucket {
+            Some(bucket) => bucket.clone(),
+            None => {
+                let bucket = Bucket::new();
+                let mut lock = self.buckets.write().await;
+                lock.insert(uid, bucket);
+                lock.get(&uid).unwrap().clone()
+            }
         }
     }
 }
@@ -46,9 +62,12 @@ impl DaRepository for MemRepository {
         name: &str,
         parent: Option<DaDirectorySid>,
     ) -> DaResult<DaDirectory> {
+        let bucket = self.bucket(requested_by).await;
+
         // Generate a new sid from the global directory counter
         let sid = DaDirectorySid(
-            self.sid_counter
+            bucket
+                .sid_counter
                 .fetch_add(1, std::sync::atomic::Ordering::SeqCst),
         );
 
@@ -64,7 +83,7 @@ impl DaRepository for MemRepository {
         // Add the directory to both the global map and the parent's children list
         // *thread safety* we use a block here to limit the scope of the global map lock
         {
-            let mut directories_lock = self.directories.write().await;
+            let mut directories_lock = bucket.directories.write().await;
             if let Some(parent_sid) = parent {
                 let parent_dir = directories_lock
                     .get(&parent_sid)
@@ -90,9 +109,11 @@ impl DaRepository for MemRepository {
     }
 
     async fn delete_directory(&self, requested_by: EntityUid, id: DaDirectorySid) -> DaResult<()> {
+        let bucket = self.bucket(requested_by).await;
+
         // To ensure that there is no race-condition such as a child created between the get of all children and the removal of the directory itself
         // we need to lock the global map exclusively. Better approach would be to use a scoped approach but we will keep it simple for now.
-        let mut dirs_lock = self.directories.write().await;
+        let mut dirs_lock = bucket.directories.write().await;
 
         let parent_sid = dirs_lock
             .get(&id)
@@ -133,7 +154,8 @@ impl DaRepository for MemRepository {
         id: DaDirectorySid,
         new_name: &str,
     ) -> DaResult<()> {
-        let dirs_lock = self.directories.read().await;
+        let bucket = self.bucket(requested_by).await;
+        let dirs_lock = bucket.directories.read().await;
         let dir_lock = dirs_lock.get(&id).ok_or(DaError::DirectoryNotFound(id))?;
         let mut name_lock = dir_lock.name.write().await;
         *name_lock = new_name.to_string();
@@ -152,8 +174,10 @@ impl DaRepository for MemRepository {
 impl MemRepository {
     #[async_recursion::async_recursion]
     async fn read_dir(self, requested_by: EntityUid, id: DaDirectorySid) -> DaResult<DaDirectory> {
+        let bucket = self.bucket(requested_by).await;
+
         let dir = {
-            let dirs_lock = self.directories.read().await;
+            let dirs_lock = bucket.directories.read().await;
             dirs_lock
                 .get(&id)
                 .ok_or(DaError::DirectoryNotFound(id))?
@@ -190,6 +214,15 @@ impl MemRepository {
             parent_sid: dir.parent_sid,
             children: children.collect().await,
         })
+    }
+}
+
+impl Bucket {
+    pub fn new() -> Self {
+        Self {
+            sid_counter: Arc::new(AtomicI64::new(0)),
+            directories: Arc::new(RwLock::new(HashMap::new())),
+        }
     }
 }
 
