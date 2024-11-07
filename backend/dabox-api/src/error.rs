@@ -11,11 +11,14 @@ pub enum ApiError {
     InternalServerError,
     #[error("Forbidden: {0}")]
     Forbidden(String),
+    #[error("Not found")]
+    NotFound,
 }
 
 impl From<DaError> for ApiError {
     fn from(err: DaError) -> Self {
         match err {
+            DaError::DirectoryNotFound(_) => Self::NotFound,
             DaError::AccessDenied { requested_by, .. } => Self::Forbidden(format!(
                 "the user {requested_by} is not allowed to access the resource"
             )),
@@ -28,7 +31,13 @@ impl From<DaError> for ApiError {
 }
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        (StatusCode::FORBIDDEN, "Forbidden").into_response()
+        match self {
+            Self::Forbidden(_) => (StatusCode::FORBIDDEN, "Forbidden").into_response(),
+            Self::NotFound => (StatusCode::NOT_FOUND, "Not found").into_response(),
+            Self::InternalServerError => {
+                (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response()
+            }
+        }
     }
 }
 

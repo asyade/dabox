@@ -30,14 +30,14 @@ impl<S: Send + Sync> FromRequestParts<S> for ApiUser {
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let uid = parts
             .headers
-            .get("X-EntityUid")
-            .ok_or_else(|| ApiError::Forbidden("No X-EntityUid header".to_string()))
+            .get("X-Entity-Uid")
+            .ok_or_else(|| ApiError::Forbidden("No X-Entity-Uid header".to_string()))
             .and_then(|value| {
                 value
                     .to_str()
                     .ok()
                     .and_then(|value| value.parse().ok())
-                    .ok_or_else(|| ApiError::Forbidden("Invalid X-EntityUid header".to_string()))
+                    .ok_or_else(|| ApiError::Forbidden("Invalid X-Entity-Uid header".to_string()))
             })?;
         Ok(ApiUser { uid })
     }

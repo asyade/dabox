@@ -4,10 +4,12 @@ use crate::routes::directory::*;
 use axum::routing::{delete, get, post, put};
 use axum::Router;
 use tokio::net::ToSocketAddrs;
+use tower_http::cors::{Any, Cors, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 pub trait AppExt {
     fn serve<A: ToSocketAddrs>(self, addr: A) -> impl Future<Output = std::io::Result<()>>;
+    fn enable_cors(self) -> Router;
 }
 
 pub fn create_app<R: DaRepository + 'static>(repository: Arc<R>) -> Router {
@@ -35,6 +37,14 @@ pub fn create_app<R: DaRepository + 'static>(repository: Arc<R>) -> Router {
 }
 
 impl AppExt for Router {
+    fn enable_cors(self) -> Router {
+        let ret = CorsLayer::new()
+            .allow_origin(Any)
+            .allow_headers(Any)
+            .allow_methods(Any);
+        self.layer(ret)
+    }
+
     async fn serve<A: ToSocketAddrs>(self, addr: A) -> std::io::Result<()> {
         let listener = tokio::net::TcpListener::bind(addr).await?;
         axum::serve(listener, self.into_make_service()).await?;

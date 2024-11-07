@@ -6,6 +6,7 @@ use tracing::info;
 use tracing_subscriber::{prelude::*, EnvFilter};
 
 const DEFAULT_LISTEN_ADDRESS: &str = "127.0.0.1:3000";
+const DEFAULT_ALLOWED_ORIGIN: &str = "http://localhost:8000/";
 
 #[tokio::main]
 async fn main() {
@@ -19,6 +20,7 @@ async fn main() {
 
     info!(listen_address = listen_addres, "Starting Dabox API");
     create_app(Arc::new(MemRepository::new()))
+        .enable_cors()
         .serve(listen_addres)
         .await
         .unwrap();
