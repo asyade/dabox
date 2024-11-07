@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSession } from "../hooks/session.ts";
-import Button from "../components/Button.tsx";
+import { Button } from "../Components.ts";
 function LoginView() {
     const [userIdInput, setUserIdInput] = useState<number | null>(null);
     const [_, setUserId] = useSession();

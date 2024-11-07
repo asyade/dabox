@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Button from "../components/Button.tsx";
+import { Button, TreeView } from "../Components.ts";
 import { useSession } from "../hooks/session.ts";
-import { ApiError, ApiErrorType, DaDirectory, useApi } from "../hooks/Api.ts";
+import { ApiError, ApiErrorType, DaDirectory, useApi } from "../hooks/api.ts";
+
+type UnhandledError = {
+    kind: ApiErrorType;
+    prettyMessage?: string;
+};
 
 function DirectoryView() {
     const [_, setUserId] = useSession();
-    const [api] = useApi();
+    const api = useApi();
     const [rootDirectory, setRootDirectory] = useState<DaDirectory | null>(
+        null,
+    );
+
+    const [currentError, setCurrentError] = useState<UnhandledError | null>(
         null,
     );
 
@@ -18,7 +27,6 @@ function DirectoryView() {
         if (api == null) {
             return;
         }
-        console.log("Loading root directory ...");
         api.getDirectory(0)
             .then((directory: DaDirectory) => {
                 setRootDirectory(directory);
@@ -32,11 +40,17 @@ function DirectoryView() {
                         setRootDirectory(directory);
                     })
                         .catch((reason: ApiError) => {
-                            console.error("Failed to create root directory !");
-                            console.error(reason);
+                            setCurrentError({
+                                kind: reason.kind,
+                                prettyMessage:
+                                    "Failed to create root directory",
+                            });
                         });
                 } else {
-                    console.error("Internal server error !");
+                    setCurrentError({
+                        kind: reason.kind,
+                        prettyMessage: "Unhandled error",
+                    });
                 }
             });
     }, [api]);
@@ -47,7 +61,9 @@ function DirectoryView() {
                 <Button onClick={handleLogout}>Logout</Button>
             </div>
             <div className="flex flex-row grow">
-                <h1>Directory</h1>
+                {rootDirectory != null
+                    ? <TreeView className="pt-4" directory={rootDirectory} />
+                    : <div>Loading ...</div>}
             </div>
         </div>
     );

@@ -3,28 +3,28 @@ import { useSession } from "./session.ts";
 
 const API_URL = "http://127.0.0.1:3000";
 
-type DaDirectory = {
-    id: string;
+export type DaDirectory = {
+    sid: string;
     name: string;
     parent?: number;
 };
 
-type PostDirectoryRequest = {
+export type PostDirectoryRequest = {
     name: string;
     parent?: number;
 };
 
-type PutDirectoryRequest = {
+export type PutDirectoryRequest = {
     name: string;
 };
 
-enum ApiErrorType {
+export enum ApiErrorType {
     Forbidden,
     NotFound,
     InternalServerError,
 }
 
-type ApiError = {
+export type ApiError = {
     kind: ApiErrorType;
     status: number;
     message: string;
@@ -97,20 +97,17 @@ class ApiClient {
     }
 }
 
-export function useApi() {
+export function useApi(): ApiClient | null {
     const [userId] = useSession();
     const [apiClient, setApiClient] = useState<ApiClient | null>(null);
 
     useEffect(() => {
         if (userId != null) {
-            setApiClient(new ApiClient(userId));
+            setApiClient(new ApiClient(parseInt(userId)));
         } else {
             setApiClient(null);
         }
     }, [userId]);
 
-    return [apiClient];
+    return apiClient;
 }
-
-export type { ApiClient, ApiError, DaDirectory };
-export { ApiErrorType };
