@@ -11,10 +11,12 @@ pub trait DaRepositoryExt {
     ///
     /// # Arguments
     ///
+    /// * `requested_by` - The Uid of the entity that is requesting the creation of the directory.
     /// * `name` - The name of the directory.
     /// * `parent` - The parent directory of the new directory (if any).
     fn create_directory(
         &self,
+        requested_by: EntityUid,
         name: &str,
         parent: Option<DaDirectorySid>,
     ) -> impl Future<Output = DaResult<DaDirectory>> + Send;
@@ -23,9 +25,11 @@ pub trait DaRepositoryExt {
     ///
     /// # Arguments
     ///
+    /// * `requested_by` - The Uid of the entity that is requesting the retrieval of the directory.
     /// * `id` - The ID of the directory to retrieve.
     fn get_directory(
         &self,
+        requested_by: EntityUid,
         id: DaDirectorySid,
     ) -> impl Future<Output = DaResult<DaDirectory>> + Send;
 
@@ -33,17 +37,24 @@ pub trait DaRepositoryExt {
     ///
     /// # Arguments
     ///
+    /// * `requested_by` - The Uid of the entity that is requesting the deletion of the directory.
     /// * `id` - The ID of the directory to delete.
-    fn delete_directory(&self, id: DaDirectorySid) -> impl Future<Output = DaResult<()>> + Send;
+    fn delete_directory(
+        &self,
+        requested_by: EntityUid,
+        id: DaDirectorySid,
+    ) -> impl Future<Output = DaResult<()>> + Send;
 
     /// Renames a directory by its ID.
     ///
     /// # Arguments
     ///
+    /// * `requested_by` - The Uid of the entity that is requesting the renaming of the directory.
     /// * `id` - The ID of the directory to rename.
     /// * `name` - The new name of the directory.
     fn rename_directory(
         &self,
+        requested_by: EntityUid,
         id: DaDirectorySid,
         name: &str,
     ) -> impl Future<Output = DaResult<()>> + Send;

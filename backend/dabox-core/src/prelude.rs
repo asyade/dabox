@@ -1,7 +1,8 @@
-pub use crate::da_directory::{DaDirectory, DaDirectorySid};
 pub use crate::error::*;
 
+pub use crate::da_directory::{DaDirectory, DaDirectorySid};
 pub use crate::da_repository::{DaRepositoryExt, MemRepository, PgRepository};
+pub use crate::entity::{Entity, EntityUid};
 
 pub(crate) use futures::Future;
 pub(crate) use futures::{FutureExt, Stream, StreamExt};
