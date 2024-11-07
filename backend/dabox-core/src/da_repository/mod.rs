@@ -6,7 +6,7 @@ pub(crate) mod backends;
 pub use backends::mem::MemRepository;
 pub use backends::pg::PgRepository;
 
-pub trait DaRepositoryExt {
+pub trait DaRepository: Clone + Send + Sync + Sized {
     /// Creates a new directory.
     ///
     /// # Arguments

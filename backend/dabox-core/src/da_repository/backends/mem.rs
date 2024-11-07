@@ -39,7 +39,7 @@ impl MemRepository {
     }
 }
 
-impl DaRepositoryExt for MemRepository {
+impl DaRepository for MemRepository {
     async fn create_directory(
         &self,
         requested_by: EntityUid,

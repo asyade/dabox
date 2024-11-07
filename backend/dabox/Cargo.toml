@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dabox-api = { path = "../dabox-api" }
+dabox-core = { path = "../dabox-core" }
+clap = "4.5.20"
+tokio = { version = "1.41.1", features = ["full"] }
