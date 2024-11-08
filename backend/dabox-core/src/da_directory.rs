@@ -1,7 +1,15 @@
 use crate::prelude::*;
 use std::fmt::{Display, Formatter};
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone, Copy, sqlx::Type)]
+
+#[cfg(feature = "database")]
+#[derive(
+    Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone, Copy, PartialOrd, Ord, sqlx::Type,
+)]
 #[sqlx(transparent)]
+pub struct DaDirectorySid(pub(crate) i64);
+
+#[cfg(not(feature = "database"))]
+#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone, Copy, PartialOrd, Ord)]
 pub struct DaDirectorySid(pub(crate) i64);
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

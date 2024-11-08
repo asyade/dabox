@@ -9,6 +9,7 @@ const DEFAULT_LISTEN_ADDRESS: &str = "127.0.0.1:3000";
 
 #[tokio::main]
 async fn main() {
+    dotenvy::dotenv().ok();
     tracing_subscriber::registry()
         .with(EnvFilter::from_default_env())
         .with(tracing_subscriber::fmt::layer().pretty())

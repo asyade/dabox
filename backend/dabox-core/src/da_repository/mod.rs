@@ -4,6 +4,8 @@ use crate::prelude::*;
 pub(crate) mod backends;
 
 pub use backends::mem::MemRepository;
+
+#[cfg(feature = "database")]
 pub use backends::pg::PgRepository;
 
 pub trait DaRepository: Clone + Send + Sync + Sized {

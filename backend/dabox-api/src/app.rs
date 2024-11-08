@@ -4,7 +4,7 @@ use crate::routes::directory::*;
 use axum::routing::{delete, get, post, put};
 use axum::Router;
 use tokio::net::ToSocketAddrs;
-use tower_http::cors::{Any, Cors, CorsLayer};
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 pub trait AppExt {
@@ -19,7 +19,6 @@ pub fn create_app<R: DaRepository + 'static>(repository: Arc<R>) -> Router {
         .route("/directory/:id", put(put_directory::<R>))
         .route("/directory/:id", delete(delete_directory::<R>))
         .with_state(repository)
-        // Add tracing layer to generate spans for each http request regardless of the potential handler
         .layer(
             TraceLayer::new_for_http().make_span_with(|request: &extract::Request<_>| {
                 let matched_path = request
@@ -30,7 +29,6 @@ pub fn create_app<R: DaRepository + 'static>(repository: Arc<R>) -> Router {
                     "http_request",
                     method = ?request.method(),
                     matched_path,
-                    some_other_field = tracing::field::Empty,
                 )
             }),
         )

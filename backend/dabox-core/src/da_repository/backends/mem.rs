@@ -1,9 +1,9 @@
-use std::{collections::HashSet, hash::Hash};
+//! A memory-backed implementation of the `DaRepository` trait.
+//! The implementation is thread-safe and use a semi lock-free approach to archive good async performance.
 
 use crate::prelude::*;
 
 /// Internal representation of a `DaDirectory` in the memory backend.
-/// Thread-safe.
 #[derive(Debug, Clone)]
 struct MemDaDirectory {
     /// Unique identifier for the directory
@@ -28,7 +28,7 @@ pub struct MemRepository {
 #[derive(Clone)]
 struct Bucket {
     sid_counter: Arc<AtomicI64>,
-    directories: Arc<RwLock<HashMap<DaDirectorySid, MemDaDirectory>>>,
+    directories: Arc<RwLock<BTreeMap<DaDirectorySid, MemDaDirectory>>>,
 }
 
 impl MemRepository {
@@ -221,11 +221,15 @@ impl Bucket {
     pub fn new() -> Self {
         Self {
             sid_counter: Arc::new(AtomicI64::new(0)),
-            directories: Arc::new(RwLock::new(HashMap::new())),
+            directories: Arc::new(RwLock::new(BTreeMap::new())),
         }
     }
 }
 
+/// Tests for the memory backend
+/// # Todo
+/// - Add tests for concurrency
+/// - Add tests to ensure that directory are well isolated by user
 #[cfg(test)]
 mod tests {
     use crate::{entity::StaticEntity, prelude::*};

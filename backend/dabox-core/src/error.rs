@@ -14,7 +14,11 @@ pub enum DaError {
     #[error("No directory with id {0:?} found")]
     DirectoryNotFound(DaDirectorySid),
     #[error(transparent)]
+    #[cfg(feature = "database")]
     SqlxError(#[from] sqlx::Error),
+    #[error("Failed to apply migrations")]
+    #[cfg(feature = "database")]
+    SqlxMigration(#[from] sqlx::migrate::MigrateError),
 }
 
 pub type DaResult<T> = Result<T, DaError>;
