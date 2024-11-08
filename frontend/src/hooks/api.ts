@@ -1,12 +1,13 @@
-import { useEffect, useState } from "React";
+import { useEffect, useState } from "react";
 import { useSession } from "./session.ts";
 
 const API_URL = "http://127.0.0.1:3000";
 
 export type DaDirectory = {
-    sid: string;
+    sid: number;
     name: string;
     parent?: number;
+    children: DaDirectory[];
 };
 
 export type PostDirectoryRequest = {
@@ -69,6 +70,9 @@ class ApiClient {
                 message: response.statusText,
             } as ApiError;
         }
+        if (response.headers.get("Content-Length") == "0") {
+            return null;
+        }
         return response.json() as T;
     }
 
@@ -85,15 +89,15 @@ class ApiClient {
         });
     }
 
-    public putDirectory(id: string, request: PutDirectoryRequest) {
-        return this.fetchApi<DaDirectory>(`/directory/${id}`, {
+    public putDirectory(sid: string, request: PutDirectoryRequest) {
+        return this.fetchApi<DaDirectory>(`/directory/${sid}`, {
             method: "PUT",
             body: JSON.stringify(request),
         });
     }
 
-    public deleteDirectory(id: string) {
-        return this.fetchApi(`/directory/${id}`, { method: "DELETE" });
+    public deleteDirectory(sid: number) {
+        return this.fetchApi(`/directory/${sid}`, { method: "DELETE" });
     }
 }
 

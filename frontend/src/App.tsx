@@ -1,6 +1,5 @@
 import "./App.css";
 
-import React from "react";
 import { CookiesProvider } from "react-cookie";
 import { useSession } from "./hooks/session.ts";
 import DirectoryView from "./views/DirectoryView.tsx";
@@ -13,7 +12,7 @@ function App() {
     <CookiesProvider>
       <div
         style={{ width: "100vw", height: "100vh" }}
-        className="flex min-h-full min-w-screen flex-col justify-center px-6 py-12 lg:px-8"
+        className="flex min-h-full min-w-screen flex-col justify-center px-6 py-6 lg:px-8"
       >
         {session != null ? <DirectoryView /> : <LoginView />}
       </div>
