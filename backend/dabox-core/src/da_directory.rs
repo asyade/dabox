@@ -48,3 +48,9 @@ impl Display for DaDirectory {
         writeln!(f, "-")
     }
 }
+
+impl Display for DaDirectorySid {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}

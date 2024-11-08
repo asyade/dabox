@@ -10,6 +10,8 @@ dabox-api = { path = "../dabox-api" }
 dabox-core = { path = "../dabox-core" }
 tokio = { version = "1.41.1", features = ["full"] }
 dotenvy = "0.15.7"
+async-recursion = { version = "1.1", optional = true }
 
 [features]
 database = ["dabox-core/database"]
+default-dataset = ["async-recursion"]

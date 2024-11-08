@@ -89,7 +89,7 @@ class ApiClient {
         });
     }
 
-    public putDirectory(sid: string, request: PutDirectoryRequest) {
+    public putDirectory(sid: number, request: PutDirectoryRequest) {
         return this.fetchApi<DaDirectory>(`/directory/${sid}`, {
             method: "PUT",
             body: JSON.stringify(request),

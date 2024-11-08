@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, TreeView } from "../Components.ts";
+import { Button, Popup, TreeView } from "../Components.ts";
 import { useSession } from "../hooks/session.ts";
 import { ApiError, ApiErrorType, DaDirectory, useApi } from "../hooks/api.ts";
 import { TreeViewItemProps } from "../components/TreeView.tsx";
@@ -81,10 +81,10 @@ function DirectoryView() {
 
     return (
         <div className="flex min-h-full flex-col">
-            <div className="justify-start">
+            <div className="justify-start flex flex-row gap-4">
                 <Button onClick={handleLogout}>Logout</Button>
             </div>
-            <div className="flex flex-row grow pt-4">
+            <div className="flex flex-row grow pt-4 overflow-hidden">
                 {rootDirectory != null
                     ? (
                         <TreeView
@@ -97,6 +97,21 @@ function DirectoryView() {
                     )
                     : <div>Loading ...</div>}
             </div>
+            {currentError != null && (
+                <Popup>
+                    <div className="bg-slate-800 p-4 rounded-md">
+                        <div className="text-red-500 text-xl">
+                            An error occurred
+                        </div>
+                        <div className="pt-4 pb-4">
+                            {currentError?.prettyMessage}
+                        </div>
+                        <Button onClick={() => setCurrentError(null)}>
+                            Close
+                        </Button>
+                    </div>
+                </Popup>
+            )}
         </div>
     );
 }

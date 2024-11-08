@@ -19,9 +19,16 @@ function LoginView() {
         <div className="flex min-h-full flex-col justify-center">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                    <h2 className="text-center text-2xl/9 font-bold tracking-tight">
-                        Login to Dabox
-                    </h2>
+                    <span className="text-md/6 font-bold">
+                        Choose a user id bellow or any non-existing user to
+                        start from an empty directory
+                    </span>
+                    <div className="text-sm/6">
+                        <br />
+                        <span>42 (500k directories)</span>
+                        <br />
+                        <span>0 (1k directories)</span>
+                    </div>
                 </div>
                 <div className="mt-10 space-y-6">
                     <div>

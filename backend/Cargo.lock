@@ -292,6 +292,7 @@ dependencies = [
 name = "dabox"
 version = "0.1.0"
 dependencies = [
+ "async-recursion",
  "dabox-api",
  "dabox-core",
  "dotenvy",

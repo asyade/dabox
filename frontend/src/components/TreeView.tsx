@@ -119,8 +119,9 @@ function TreeViewItem(props: TreeViewItemProps) {
                             <input
                                 className="text-white w-full bg-transparent placeholder:text-white-400 text-white-700 text-sm border border-white-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-teal-500 hover:border-teal-300 shadow-sm focus:shadow"
                                 value={renamedDirectoryName}
-                                onChange={(e) =>
-                                    setRenamedDirectoryName(e.target.value)}
+                                onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>,
+                                ) => setRenamedDirectoryName(e.target.value)}
                                 onBlur={() => handleRenameDirectory()}
                             />
                         )}
@@ -175,10 +176,12 @@ export function TreeView(props: TreeViewProps) {
         return <></>;
     }
     return (
-        <TreeViewItem
-            onDeleted={() => {}}
-            treeViewProps={props}
-            directory={props.directory}
-        />
+        <div className="w-full h-full overflow-y-scroll">
+            <TreeViewItem
+                onDeleted={() => {}}
+                treeViewProps={props}
+                directory={props.directory}
+            />
+        </div>
     );
 }
