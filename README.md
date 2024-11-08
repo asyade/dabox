@@ -2,8 +2,10 @@
 
 # Frontend
 
-The frontend is a simple react app that uses the Dabox API to manage directories
-and files. It (by default) use `localhost:3000` to reach the backend.
+The frontend is a simple `react` app that uses the Dabox API to manage
+directories. It (by default) use `localhost:3000` to reach the backend.
+
+![video.gif](video.gif)
 
 ## Requirements
 
@@ -17,15 +19,14 @@ To run the frontend, you first need to install the dependencies using
 ```
 cd frontend
 deno install
-npm run dev
+deno task dev
 ```
 
 # Backend
 
-The backend is a axum server that uses a generic repository of directories. It
-provides a REST API to manage directories and files and basic authentication
-system that allow user isolation and can easily be extended to support more
-complex authentication systems.
+The backend is a axum server that provides a REST API to manage directories and
+basic authentication system that allow user isolation and can easily be extended
+to support more complex authentication systems.
 
 ## Requirements
 
@@ -42,6 +43,8 @@ server:
 - The `default-dataset` feature will populate the repository with a default
   dataset that can be used to test the API. Example:
   `cargo run -F default-database`
+  > Will populate the repository with a default dataset on the user with UID `0`
+  > and `42`
 
 - The `database` feature can be used to change the repository backend (eg: use a
   real database instead of an in-memory one).
@@ -50,7 +53,7 @@ server:
   not implemented.
 
 Once the server is running you can use the provided frontend to interact with
-the API or use any other HTTP client to interact with the API.
+the API or use an HTTP client to interact with the API manually.
 
 ## API
 
