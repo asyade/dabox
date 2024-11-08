@@ -1,3 +1,5 @@
+/// This module contains the directory data structure and related logic.
+/// His main purpose is to provide a unified interface.
 use crate::prelude::*;
 use std::fmt::{Display, Formatter};
 
@@ -12,9 +14,10 @@ pub struct DaDirectorySid(pub(crate) i64);
 #[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone, Copy, PartialOrd, Ord)]
 pub struct DaDirectorySid(pub(crate) i64);
 
+/// Represent a directory with all its descendants.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DaDirectory {
-    /// The unique identifier of the directory
+    /// The unique identifier of the directory.
     pub sid: DaDirectorySid,
     /// The name of the directory
     pub name: String,

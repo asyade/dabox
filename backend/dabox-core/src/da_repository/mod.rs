@@ -1,5 +1,4 @@
 /// This module contains extensions trait that allow persistence of `DaDirectory` objects across agnostic backends (e.g. Postgres, SQLite, etc.).
-/// In the current implementation, only Postgres is supported but implementing the `DaRepository` trait for other backends should be straightforward.
 use crate::prelude::*;
 pub(crate) mod backends;
 
